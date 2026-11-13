@@ -1,5 +1,5 @@
 import io
-from datetime import date, datetime
+from datetime import date
 
 from flask import Blueprint, Response
 from flask_login import login_required, current_user

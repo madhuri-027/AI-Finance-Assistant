@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from app import db
 
 
@@ -17,5 +17,5 @@ class Transaction(db.Model):
     transaction_type = db.Column(db.String(20), nullable=False)
     category = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    date = db.Column(db.Date, nullable=False, default=date.today)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
