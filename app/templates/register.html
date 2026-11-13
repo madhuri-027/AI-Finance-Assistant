@@ -1,43 +1,179 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - AI Finance Assistant</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #5367d5;
+        }
+
+        .login-link {
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .flash-message {
+            padding: 12px;
+            margin-bottom: 18px;
+            border-radius: 7px;
+            background: #fff0f0;
+            color: #c0392b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 30px 22px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <h1>Create Your Account</h1>
+    <div class="register-container">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endwith %}
+        <h1>Create Your Account</h1>
+        <p class="subtitle">
+            Join AI Finance Assistant and manage your finances smarter.
+        </p>
 
-    <form method="POST">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
 
-        <input type="text" name="username"
-               placeholder="Enter username" required>
+        <form method="POST">
 
-        <br><br>
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
 
-        <input type="email" name="email"
-               placeholder="Enter email" required>
+            <div class="input-group">
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
 
-        <br><br>
+            <div class="input-group">
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter password (minimum 8 characters)"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
 
-        <input type="password" name="password"
-               placeholder="Enter password (minimum 8 characters)"
-               minlength="8" required>
+            <button type="submit">Register</button>
 
-        <br><br>
+        </form>
 
-        <button type="submit">Register</button>
+        <p class="login-link">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}">Login</a>
+        </p>
 
-    </form>
-
-    <p>Already have an account?
-        <a href="{{ url_for('auth.login') }}">Login</a>
-    </p>
+    </div>
 
 </body>
 </html>
