@@ -16,6 +16,7 @@
         body {
             font-family: Arial, sans-serif;
             min-height: 100vh;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -26,21 +27,21 @@
         .login-container {
             width: 100%;
             max-width: 420px;
-            background: white;
+            background: #ffffff;
             padding: 40px 35px;
             border-radius: 16px;
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
 
-        h1 {
-            color: #333;
+        .login-container h1 {
+            color: #333333;
             margin-bottom: 10px;
             font-size: 28px;
         }
 
         .subtitle {
-            color: #777;
+            color: #777777;
             margin-bottom: 30px;
             font-size: 14px;
         }
@@ -50,16 +51,17 @@
             text-align: left;
         }
 
-        input {
+        .input-group input {
             width: 100%;
             padding: 14px;
-            border: 1px solid #ddd;
+            border: 1px solid #dddddd;
             border-radius: 8px;
             font-size: 15px;
             outline: none;
+            transition: 0.3s;
         }
 
-        input:focus {
+        .input-group input:focus {
             border-color: #667eea;
             box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
         }
@@ -83,7 +85,7 @@
 
         .register-link {
             margin-top: 25px;
-            color: #666;
+            color: #666666;
             font-size: 14px;
         }
 
@@ -105,6 +107,16 @@
             color: #c0392b;
             font-size: 14px;
         }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 22px;
+            }
+
+            .login-container h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 
@@ -113,11 +125,15 @@
     <div class="login-container">
 
         <h1>Welcome Back!</h1>
-        <p class="subtitle">Login to your AI Finance Assistant</p>
+        <p class="subtitle">
+            Login to your AI Finance Assistant
+        </p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
-                <div class="flash-message">{{ message }}</div>
+                <div class="flash-message">
+                    {{ message }}
+                </div>
             {% endfor %}
         {% endwith %}
 
@@ -128,6 +144,7 @@
                     type="email"
                     name="email"
                     placeholder="Enter email"
+                    autocomplete="email"
                     required
                 >
             </div>
@@ -137,6 +154,7 @@
                     type="password"
                     name="password"
                     placeholder="Enter password"
+                    autocomplete="current-password"
                     required
                 >
             </div>
