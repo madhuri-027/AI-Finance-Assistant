@@ -1,0 +1,271 @@
+
+{% extends "base.html" %}
+
+{% block title %}Edit Transaction | AI Finance Assistant{% endblock %}
+{% block page_heading %}Edit Transaction{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-container {
+        max-width: 850px;
+        margin: 10px auto;
+    }
+
+    .edit-card {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 14px;
+        border: 1px solid #e9edf5;
+        box-shadow: 0 4px 18px rgba(31, 45, 80, 0.05);
+    }
+
+    .edit-heading {
+        color: #243b70;
+        font-size: 21px;
+        margin-bottom: 8px;
+    }
+
+    .edit-description {
+        color: #8992a6;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px 20px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #38445f;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #dce2ed;
+        border-radius: 8px;
+        background: #fbfcfe;
+        color: #26334e;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        box-sizing: border-box;
+        transition: 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #4569b5;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(69, 105, 181, 0.10);
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .button-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .save-button {
+        background: #294780;
+        color: white;
+        padding: 12px 22px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .save-button:hover {
+        background: #1b315f;
+    }
+
+    .cancel-button {
+        background: #edf1f7;
+        color: #43516d;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .cancel-button:hover {
+        background: #dfe5ef;
+    }
+
+    .flash-message {
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background: #fff0f0;
+        color: #bd3030;
+        font-size: 13px;
+    }
+
+    @media(max-width: 600px) {
+        .edit-card {
+            padding: 20px 15px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .button-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .save-button,
+        .cancel-button {
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="edit-container">
+
+    <div class="edit-card">
+
+        <h3 class="edit-heading">✏️ Update Transaction Details</h3>
+
+        <p class="edit-description">
+            Modify your transaction information and save your changes.
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Transaction Title</label>
+                    <input type="text"
+                           name="title"
+                           value="{{ transaction.title }}"
+                           maxlength="100"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number"
+                           name="amount"
+                           value="{{ transaction.amount }}"
+                           min="0.01"
+                           step="0.01"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Transaction Type</label>
+
+                    <select name="transaction_type" required>
+                        <option value="Income"
+                            {% if transaction.transaction_type == 'Income' %}selected{% endif %}>
+                            Income
+                        </option>
+
+                        <option value="Expense"
+                            {% if transaction.transaction_type == 'Expense' %}selected{% endif %}>
+                            Expense
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+
+                    <select name="category" required>
+                        {% for category in [
+                            'Salary', 'Food', 'Shopping', 'Travel',
+                            'Education', 'Bills', 'Entertainment',
+                            'Health', 'Other'
+                        ] %}
+                            <option value="{{ category }}"
+                                {% if transaction.category == category %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date"
+                           name="date"
+                           value="{{ transaction.date.isoformat() }}"
+                           required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Description</label>
+                    <textarea name="description"
+                              placeholder="Enter transaction details">{{ transaction.description or '' }}</textarea>
+                </div>
+
+            </div>
+
+            <div class="button-group">
+
+                <button type="submit" class="save-button">
+                    ✓ Save Changes
+                </button>
+
+                <a class="cancel-button"
+                   href="{{ url_for('transactions.transactions_home') }}">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

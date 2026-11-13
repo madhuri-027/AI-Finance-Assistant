@@ -1,0 +1,636 @@
+
+{% extends "base.html" %}
+
+{% block title %}Budget Management | AI Finance Assistant{% endblock %}
+{% block page_heading %}Budget Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .budget-container {
+        max-width: 1250px;
+        margin: auto;
+    }
+
+    .page-intro {
+        color: #78839b;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .budget-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        border: 1px solid #e9edf5;
+        box-shadow: 0 4px 18px rgba(31, 45, 80, 0.05);
+    }
+
+    .card-heading {
+        color: #243b70;
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .card-description {
+        color: #8992a6;
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+
+    /* MONTH FILTER */
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 18px;
+        align-items: end;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #38445f;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #dce2ed;
+        border-radius: 8px;
+        background: #fbfcfe;
+        color: #26334e;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #4569b5;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(69, 105, 181, 0.10);
+    }
+
+    .primary-button {
+        background: #294780;
+        color: white;
+        padding: 12px 21px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .primary-button:hover {
+        background: #1b315f;
+        transform: translateY(-1px);
+    }
+
+    /* SUMMARY CARDS */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .summary-card {
+        background: white;
+        padding: 23px;
+        border-radius: 13px;
+        border: 1px solid #e9edf5;
+        box-shadow: 0 4px 15px rgba(31, 45, 80, 0.04);
+    }
+
+    .summary-label {
+        color: #78839b;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 13px;
+    }
+
+    .summary-value {
+        font-size: 25px;
+        font-weight: 750;
+        color: #243b70;
+        overflow-wrap: anywhere;
+    }
+
+    .blue { color: #4569b5; }
+    .green { color: #16834b; }
+    .red { color: #d64a4a; }
+    .orange { color: #d97706; }
+
+    /* CREATE BUDGET */
+
+    .budget-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 20px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .helper-text {
+        color: #8992a6;
+        font-size: 12px;
+        margin-top: 13px;
+        line-height: 1.6;
+    }
+
+    /* CATEGORY TRACKING */
+
+    .budget-item {
+        border: 1px solid #e7ebf3;
+        background: #fcfdff;
+        border-radius: 11px;
+        padding: 21px;
+        margin-top: 16px;
+    }
+
+    .budget-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .category-name {
+        color: #243b70;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .budget-limit {
+        color: #78839b;
+        font-size: 13px;
+        margin-top: 7px;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #e9f7ee;
+        color: #16834b;
+    }
+
+    .status-warning {
+        background: #fff4df;
+        color: #bd7600;
+    }
+
+    .status-danger {
+        background: #ffebeb;
+        color: #c43c3c;
+    }
+
+    .progress {
+        width: 100%;
+        height: 12px;
+        background: #e9edf4;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 17px 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 20px;
+        transition: width 0.6s ease;
+    }
+
+    .normal { background: #20a36a; }
+    .warning { background: #f0a52b; }
+    .danger { background: #dc5252; }
+
+    .budget-details {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 17px;
+    }
+
+    .detail-box {
+        background: #f2f5fa;
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .detail-label {
+        color: #78839b;
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        color: #26334e;
+        font-size: 14px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .alert-message {
+        margin-top: 15px;
+        padding: 11px 13px;
+        background: #fff5e6;
+        color: #a96500;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+    .alert-danger {
+        background: #fff0f0;
+        color: #bd3030;
+    }
+
+    .delete-button {
+        background: #df5252;
+        color: white;
+        padding: 9px 15px;
+        border: none;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 17px;
+        transition: 0.2s;
+    }
+
+    .delete-button:hover {
+        background: #bd3030;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 35px 15px;
+        color: #8992a6;
+        line-height: 1.8;
+    }
+
+    .empty-state span {
+        display: block;
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        padding: 13px 16px;
+        margin-bottom: 17px;
+        border-radius: 9px;
+        background: #e5f7eb;
+        color: #23753d;
+        border: 1px solid #c9ebd2;
+        font-size: 14px;
+    }
+
+    @media(max-width: 800px) {
+        .summary-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-grid button {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media(max-width: 550px) {
+        .budget-card {
+            padding: 19px 15px;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .filter-grid,
+        .budget-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .filter-grid button,
+        .primary-button {
+            width: 100%;
+        }
+
+        .budget-details {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="budget-container">
+
+    <p class="page-intro">
+        Plan your spending, track expenses, and manage monthly budgets.
+    </p>
+
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- MONTHLY FILTER -->
+
+    <div class="budget-card">
+
+        <h3 class="card-heading">📅 Monthly Budget Overview</h3>
+
+        <p class="card-description">
+            Select a month and year to view your budget performance.
+        </p>
+
+        <form method="GET" class="filter-grid">
+
+            <div class="form-group">
+                <label>Month</label>
+
+                <select name="month">
+                    {% for m in range(1, 13) %}
+                        <option value="{{ m }}"
+                            {% if m == selected_month %}selected{% endif %}>
+                            {{ ["", "January", "February", "March",
+                            "April", "May", "June", "July", "August",
+                            "September", "October", "November",
+                            "December"][m] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Year</label>
+
+                <input type="number"
+                       name="year"
+                       value="{{ selected_year }}"
+                       min="2000"
+                       max="2100">
+            </div>
+
+            <button type="submit" class="primary-button">
+                View Budget
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- SUMMARY -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+            <p class="summary-label">💰 Total Budget</p>
+            <h2 class="summary-value blue">
+                ₹{{ "%.2f"|format(total_budget) }}
+            </h2>
+        </div>
+
+        <div class="summary-card">
+            <p class="summary-label">📉 Total Spent</p>
+            <h2 class="summary-value red">
+                ₹{{ "%.2f"|format(total_spent) }}
+            </h2>
+        </div>
+
+        <div class="summary-card">
+            <p class="summary-label">💵 Remaining Budget</p>
+            <h2 class="summary-value {{ 'green' if total_remaining >= 0 else 'red' }}">
+                ₹{{ "%.2f"|format(total_remaining) }}
+            </h2>
+        </div>
+
+    </div>
+
+    <!-- CREATE OR UPDATE BUDGET -->
+
+    <div class="budget-card">
+
+        <h3 class="card-heading">＋ Create or Update Budget</h3>
+
+        <p class="card-description">
+            Set a monthly spending limit for each expense category.
+        </p>
+
+        <form method="POST">
+
+            <input type="hidden"
+                   name="month"
+                   value="{{ selected_month }}">
+
+            <input type="hidden"
+                   name="year"
+                   value="{{ selected_year }}">
+
+            <div class="budget-form-grid">
+
+                <div class="form-group">
+                    <label>Expense Category</label>
+
+                    <select name="category" required>
+                        <option value="">Select Category</option>
+
+                        {% for category in categories %}
+                            <option value="{{ category }}">
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Monthly Budget Amount (₹)</label>
+
+                    <input type="number"
+                           name="amount"
+                           min="0.01"
+                           step="0.01"
+                           placeholder="Enter budget amount"
+                           required>
+                </div>
+
+            </div>
+
+            <button type="submit" class="primary-button">
+                Save Budget
+            </button>
+
+        </form>
+
+        <p class="helper-text">
+            Saving an existing category updates its budget for the selected month.
+        </p>
+
+    </div>
+
+    <!-- CATEGORY-WISE TRACKING -->
+
+    <div class="budget-card">
+
+        <h3 class="card-heading">📊 Category-wise Budget Tracking</h3>
+
+        <p class="card-description">
+            Monitor spending and see how much of each budget you have used.
+        </p>
+
+        {% if budget_data %}
+
+            {% for item in budget_data %}
+
+                {% set progress = [item.percentage, 100]|min %}
+
+                <div class="budget-item">
+
+                    <div class="budget-top">
+
+                        <div>
+                            <h4 class="category-name">
+                                {{ item.category }}
+                            </h4>
+
+                            <p class="budget-limit">
+                                Monthly Limit: ₹{{ "%.2f"|format(item.limit) }}
+                            </p>
+                        </div>
+
+                        <div>
+                            {% if item.status == 'Exceeded' %}
+                                <span class="status status-danger">
+                                    Exceeded
+                                </span>
+                            {% elif item.status == 'Warning' %}
+                                <span class="status status-warning">
+                                    Warning
+                                </span>
+                            {% else %}
+                                <span class="status">
+                                    {{ item.status }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-fill
+                            {% if item.status == 'Exceeded' %}danger
+                            {% elif item.status == 'Warning' %}warning
+                            {% else %}normal{% endif %}"
+                            data-width="{{ progress }}">
+                        </div>
+                    </div>
+
+                    <div class="budget-details">
+
+                        <div class="detail-box">
+                            <p class="detail-label">Amount Spent</p>
+                            <p class="detail-value">
+                                ₹{{ "%.2f"|format(item.spent) }}
+                            </p>
+                        </div>
+
+                        <div class="detail-box">
+                            <p class="detail-label">Remaining</p>
+                            <p class="detail-value {{ 'green' if item.remaining >= 0 else 'red' }}">
+                                ₹{{ "%.2f"|format(item.remaining) }}
+                            </p>
+                        </div>
+
+                        <div class="detail-box">
+                            <p class="detail-label">Budget Used</p>
+                            <p class="detail-value">
+                                {{ "%.1f"|format(item.percentage) }}%
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {% if item.status == "Warning" %}
+
+                        <div class="alert-message">
+                            ⚠ You have used at least 80% of this budget.
+                        </div>
+
+                    {% elif item.status == "Exceeded" %}
+
+                        <div class="alert-message alert-danger">
+                            ⚠ Your budget limit has been exceeded.
+                        </div>
+
+                    {% endif %}
+
+                    <form method="POST"
+                          action="{{ url_for('budgets.delete_budget', budget_id=item.id) }}"
+                          onsubmit="return confirm('Delete this budget?');">
+
+                        <button type="submit" class="delete-button">
+                            Delete Budget
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-state">
+                <span>💰</span>
+                <strong>No budgets created for this month.</strong>
+                <p>Create your first budget using the form above!</p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll(".progress-fill").forEach(function(bar) {
+    const width = Number(bar.dataset.width) || 0;
+    bar.style.width = Math.min(Math.max(width, 0), 100) + "%";
+});
+</script>
+{% endblock %}

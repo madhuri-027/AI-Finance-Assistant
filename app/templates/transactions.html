@@ -1,0 +1,428 @@
+
+{% extends "base.html" %}
+
+{% block title %}Transactions | AI Finance Assistant{% endblock %}
+{% block page_heading %}Income & Expense Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .transaction-container {
+        max-width: 1250px;
+        margin: auto;
+    }
+
+    .page-intro {
+        color: #78839b;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .transaction-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 18px rgba(31, 45, 80, 0.05);
+        border: 1px solid #e9edf5;
+    }
+
+    .card-heading {
+        font-size: 19px;
+        font-weight: 700;
+        color: #243b70;
+        margin-bottom: 7px;
+    }
+
+    .card-description {
+        color: #8992a6;
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px 20px;
+    }
+
+    .form-group {
+        margin-bottom: 13px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #38445f;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #dce2ed;
+        border-radius: 8px;
+        background: #fbfcfe;
+        color: #26334e;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #4569b5;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(69, 105, 181, 0.10);
+    }
+
+    .form-group textarea {
+        min-height: 85px;
+        resize: vertical;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .primary-button {
+        background: #294780;
+        color: white;
+        padding: 12px 21px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .primary-button:hover {
+        background: #1b315f;
+        transform: translateY(-1px);
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .transaction-count {
+        background: #edf2fc;
+        color: #34528e;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+    }
+
+    th {
+        background: #f1f4fa;
+        color: #56627b;
+        padding: 14px 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #edf0f5;
+        color: #39445b;
+        font-size: 13px;
+    }
+
+    tr:hover td {
+        background: #fafbfe;
+    }
+
+    .income {
+        color: #16834b;
+        font-weight: 700;
+    }
+
+    .expense {
+        color: #d64a4a;
+        font-weight: 700;
+    }
+
+    .amount-cell {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+    }
+
+    .action-buttons form {
+        margin: 0;
+    }
+
+    .edit-button,
+    .delete-button {
+        display: inline-block;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .edit-button {
+        background: #3566b5;
+    }
+
+    .edit-button:hover {
+        background: #254b8c;
+    }
+
+    .delete-button {
+        background: #df5252;
+    }
+
+    .delete-button:hover {
+        background: #bd3030;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 35px 15px;
+        color: #8992a6;
+    }
+
+    .empty-state span {
+        display: block;
+        font-size: 35px;
+        margin-bottom: 12px;
+    }
+
+    @media(max-width: 650px) {
+        .transaction-card {
+            padding: 18px 14px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .primary-button {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="transaction-container">
+
+    <p class="page-intro">
+        Manage your income and expenses in one place.
+    </p>
+
+    <!-- ADD TRANSACTION -->
+
+    <div class="transaction-card">
+
+        <h3 class="card-heading">＋ Add New Transaction</h3>
+        <p class="card-description">
+            Enter the details below to record a new financial transaction.
+        </p>
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Transaction Title</label>
+                    <input type="text"
+                           name="title"
+                           placeholder="Example: Monthly Salary"
+                           maxlength="100"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number"
+                           name="amount"
+                           min="0.01"
+                           step="0.01"
+                           placeholder="Enter amount"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <select name="transaction_type" required>
+                        <option value="">Select Type</option>
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Food">Food</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Education">Education</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Health">Health</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date"
+                           name="date"
+                           value="{{ today }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text"
+                           name="description"
+                           placeholder="Enter transaction details">
+                </div>
+
+            </div>
+
+            <button type="submit" class="primary-button">
+                + Add Transaction
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- TRANSACTION HISTORY -->
+
+    <div class="transaction-card">
+
+        <div class="history-header">
+            <div>
+                <h3 class="card-heading">Transaction History</h3>
+                <p class="card-description">
+                    View, edit, and manage your recorded transactions.
+                </p>
+            </div>
+
+            <span class="transaction-count">
+                {{ transactions|length }} Transactions
+            </span>
+        </div>
+
+        {% if transactions %}
+
+        <div class="table-wrapper">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in transactions %}
+                    <tr>
+
+                        <td><strong>{{ item.title }}</strong></td>
+
+                        <td class="amount-cell">
+                            ₹{{ "%.2f"|format(item.amount) }}
+                        </td>
+
+                        <td class="{{ 'income' if item.transaction_type == 'Income' else 'expense' }}">
+                            {{ item.transaction_type }}
+                        </td>
+
+                        <td>{{ item.category }}</td>
+
+                        <td>{{ item.date.strftime('%d-%m-%Y') }}</td>
+
+                        <td>
+                            <div class="action-buttons">
+
+                                <a class="edit-button"
+                                   href="{{ url_for('transactions.edit_transaction', transaction_id=item.id) }}">
+                                    Edit
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ url_for('transactions.delete_transaction', transaction_id=item.id) }}"
+                                      onsubmit="return confirm('Are you sure you want to delete this transaction?');">
+
+                                    <button class="delete-button" type="submit">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+            <span>💳</span>
+            <strong>No transactions yet</strong>
+            <p>Add your first transaction using the form above.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

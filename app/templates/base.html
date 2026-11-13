@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}AI Finance Assistant{% endblock %}</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #243b70;
+            --primary-light: #354f91;
+            --background: #f3f5fa;
+            --text: #202943;
+            --muted: #78839b;
+            --white: #ffffff;
+            --border: #e8ecf3;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 255px;
+            background: linear-gradient(180deg, #172653, #101c3d);
+            color: white;
+            padding: 25px 16px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 750;
+            margin: 8px 10px 35px;
+            line-height: 1.4;
+            letter-spacing: 0.3px;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #aebcdd;
+            margin-top: 4px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-heading {
+            font-size: 10px;
+            color: #9aa9cc;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin: 20px 12px 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #e0e7f7;
+            text-decoration: none;
+            padding: 12px 13px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.10);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .nav-links a.active {
+            background: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .logout {
+            margin-top: 20px;
+            color: #ffb8b2 !important;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            padding-top: 18px !important;
+        }
+
+        .logout:hover {
+            background: rgba(231,76,60,0.15) !important;
+        }
+
+        /* MAIN CONTENT */
+
+        .main {
+            margin-left: 255px;
+            width: calc(100% - 255px);
+            min-height: 100vh;
+            padding: 30px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar h2 {
+            font-size: 25px;
+            font-weight: 700;
+            color: #1d2b4d;
+        }
+
+        .page-content {
+            width: 100%;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        /* FLASH MESSAGES */
+
+        .flash-message {
+            padding: 14px 17px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            background: #e5f7eb;
+            color: #23753d;
+            border: 1px solid #c9ebd2;
+            font-size: 14px;
+        }
+
+        /* GENERAL FORM ELEMENTS */
+
+        input, select, textarea {
+            font-family: inherit;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        a {
+            transition: 0.2s ease;
+        }
+
+        /* SCROLLBAR */
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #53658f;
+            border-radius: 10px;
+        }
+
+        /* TABLET */
+
+        @media(max-width: 900px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+                padding: 24px 20px;
+            }
+
+            .topbar h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* MOBILE */
+
+        @media(max-width: 600px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                max-height: none;
+                padding: 15px;
+            }
+
+            .logo {
+                margin: 5px 8px 15px;
+                font-size: 21px;
+            }
+
+            .nav-heading {
+                margin-top: 12px;
+            }
+
+            .nav-links {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .nav-links a {
+                padding: 10px 8px;
+                font-size: 12px;
+                gap: 6px;
+            }
+
+            .nav-links a:hover {
+                transform: none;
+            }
+
+            .logout {
+                margin-top: 5px;
+                border-top: none;
+                padding-top: 10px !important;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px 14px;
+            }
+
+            .topbar {
+                margin-bottom: 20px;
+            }
+
+            .topbar h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            💰 AI Finance
+            <span>Smart Money Management</span>
+        </div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <nav class="nav-links">
+
+            <a href="{{ url_for('dashboard.dashboard_home') }}"
+               class="{% if request.endpoint == 'dashboard.dashboard_home' %}active{% endif %}">
+                📊 Dashboard
+            </a>
+
+            <a href="{{ url_for('transactions.transactions_home') }}"
+               class="{% if request.endpoint in ['transactions.transactions_home', 'transactions.edit_transaction'] %}active{% endif %}">
+                💳 Transactions
+            </a>
+
+            <a href="{{ url_for('budgets.budgets_home') }}"
+               class="{% if request.endpoint == 'budgets.budgets_home' %}active{% endif %}">
+                💰 Budget Management
+            </a>
+
+            <a href="{{ url_for('insights.insights_home') }}"
+               class="{% if request.endpoint == 'insights.insights_home' %}active{% endif %}">
+                🤖 AI Financial Insights
+            </a>
+
+            <a href="{{ url_for('analytics.analytics_home') }}"
+               class="{% if request.endpoint == 'analytics.analytics_home' %}active{% endif %}">
+                📈 Advanced Analytics
+            </a>
+
+            <a href="{{ url_for('chatbot.chatbot_home') }}"
+               class="{% if request.endpoint == 'chatbot.chatbot_home' %}active{% endif %}">
+                💬 Finance Chatbot
+            </a>
+
+            <div class="nav-heading">TOOLS & REPORTS</div>
+
+            <a href="{{ url_for('export.export_transactions') }}"
+               class="{% if request.endpoint == 'export.export_transactions' %}active{% endif %}">
+                📥 Export CSV
+            </a>
+
+            <a href="{{ url_for('pdf_report.download_report') }}"
+               class="{% if request.endpoint == 'pdf_report.download_report' %}active{% endif %}">
+                📄 PDF Reports
+            </a>
+
+            <a href="{{ url_for('recurring.recurring_home') }}"
+               class="{% if request.endpoint == 'recurring.recurring_home' %}active{% endif %}">
+                🔁 Recurring Transactions
+            </a>
+
+            <a href="{{ url_for('goals.goals_home') }}"
+               class="{% if request.endpoint == 'goals.goals_home' %}active{% endif %}">
+                🎯 Financial Goals
+            </a>
+
+            <a href="{{ url_for('auth.logout') }}" class="logout">
+                🚪 Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="main">
+
+        <div class="topbar">
+            <h2>{% block page_heading %}AI Finance Assistant{% endblock %}</h2>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="page-content">
+            {% block content %}{% endblock %}
+        </section>
+
+    </main>
+
+</div>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

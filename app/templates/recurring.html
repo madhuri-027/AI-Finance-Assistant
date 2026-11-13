@@ -1,0 +1,530 @@
+
+{% extends "base.html" %}
+
+{% block title %}Recurring Transactions | AI Finance Assistant{% endblock %}
+{% block page_heading %}Recurring Transactions{% endblock %}
+
+{% block extra_css %}
+<style>
+    .recurring-container {
+        max-width: 1250px;
+        margin: auto;
+    }
+
+    .page-intro {
+        color: #78839b;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .recurring-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        border: 1px solid #e9edf5;
+        box-shadow: 0 4px 18px rgba(31, 45, 80, 0.05);
+    }
+
+    .card-heading {
+        color: #243b70;
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .card-description {
+        color: #8992a6;
+        font-size: 13px;
+        margin-bottom: 23px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #38445f;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #dce2ed;
+        border-radius: 8px;
+        background: #fbfcfe;
+        color: #26334e;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #4569b5;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(69, 105, 181, 0.10);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 90px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .primary-button {
+        background: #294780;
+        color: white;
+        padding: 12px 21px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .primary-button:hover {
+        background: #1b315f;
+        transform: translateY(-1px);
+    }
+
+    /* HISTORY */
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .count-badge {
+        background: #edf2fc;
+        color: #34528e;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f1f4fa;
+        color: #56627b;
+        padding: 14px 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #edf0f5;
+        color: #39445b;
+        font-size: 13px;
+    }
+
+    tbody tr:hover td {
+        background: #fafbfe;
+    }
+
+    .transaction-title {
+        font-weight: 700;
+        color: #243b70;
+    }
+
+    .amount {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .income {
+        color: #16834b;
+        font-weight: 700;
+    }
+
+    .expense {
+        color: #d64a4a;
+        font-weight: 700;
+    }
+
+    /* STATUS */
+
+    .status {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .active-status {
+        background: #e9f7ee;
+        color: #16834b;
+    }
+
+    .paused-status {
+        background: #fff4df;
+        color: #bd7600;
+    }
+
+    /* ACTIONS */
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .actions form {
+        margin: 0;
+    }
+
+    .toggle-button,
+    .delete-button {
+        border: none;
+        padding: 9px 13px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .toggle-button {
+        background: #eaf0fc;
+        color: #34528e;
+    }
+
+    .toggle-button:hover {
+        background: #d8e4fa;
+    }
+
+    .delete-button {
+        background: #ffebeb;
+        color: #c43c3c;
+    }
+
+    .delete-button:hover {
+        background: #ffdada;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 15px;
+        color: #8992a6;
+        line-height: 1.8;
+    }
+
+    .empty-state span {
+        display: block;
+        font-size: 38px;
+        margin-bottom: 12px;
+    }
+
+    .empty-state strong {
+        color: #38445f;
+    }
+
+    /* FLASH */
+
+    .flash-message {
+        padding: 13px 16px;
+        margin-bottom: 16px;
+        border-radius: 9px;
+        background: #e5f7eb;
+        color: #23753d;
+        border: 1px solid #c9ebd2;
+        font-size: 14px;
+    }
+
+    @media(max-width: 650px) {
+        .recurring-card {
+            padding: 19px 15px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .primary-button {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="recurring-container">
+
+    <p class="page-intro">
+        Manage your regular income and expenses in one place.
+    </p>
+
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- ADD RECURRING TRANSACTION -->
+
+    <div class="recurring-card">
+
+        <h3 class="card-heading">＋ Add Recurring Transaction</h3>
+
+        <p class="card-description">
+            Set up regular transactions and track their upcoming due dates.
+        </p>
+
+        <form method="POST"
+              action="{{ url_for('recurring.recurring_home') }}">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Transaction Title *</label>
+                    <input type="text"
+                           name="title"
+                           placeholder="Example: Monthly Salary"
+                           maxlength="100"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount (₹) *</label>
+                    <input type="number"
+                           name="amount"
+                           min="0.01"
+                           step="0.01"
+                           placeholder="Enter amount"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Transaction Type *</label>
+                    <select name="transaction_type" required>
+                        <option value="">Select Type</option>
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Category *</label>
+                    <input type="text"
+                           name="category"
+                           placeholder="Example: Salary, Rent, Bills"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Frequency *</label>
+                    <select name="frequency" required>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly" selected>Monthly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>First Due Date *</label>
+                    <input type="date"
+                           name="start_date"
+                           value="{{ today }}"
+                           required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Description</label>
+                    <textarea name="description"
+                              rows="3"
+                              placeholder="Enter optional details"></textarea>
+                </div>
+
+            </div>
+
+            <button type="submit" class="primary-button">
+                + Add Recurring Transaction
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- RECURRING TRANSACTION HISTORY -->
+
+    <div class="recurring-card">
+
+        <div class="history-header">
+
+            <div>
+                <h3 class="card-heading">Your Recurring Transactions</h3>
+                <p class="card-description">
+                    View and manage your regular transactions.
+                </p>
+            </div>
+
+            <span class="count-badge">
+                {{ recurring_items|length }} Transactions
+            </span>
+
+        </div>
+
+        {% if recurring_items %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Frequency</th>
+                        <th>Next Due</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in recurring_items %}
+
+                    <tr>
+
+                        <td class="transaction-title">
+                            {{ item.title }}
+                        </td>
+
+                        <td class="amount">
+                            ₹{{ "%.2f"|format(item.amount) }}
+                        </td>
+
+                        <td class="{{ 'income' if item.transaction_type == 'Income' else 'expense' }}">
+                            {{ item.transaction_type }}
+                        </td>
+
+                        <td>{{ item.frequency }}</td>
+
+                        <td>
+                            {{ item.next_due_date.strftime("%d-%m-%Y") }}
+                        </td>
+
+                        <td>
+                            {% if item.active %}
+                                <span class="status active-status">
+                                    Active
+                                </span>
+                            {% else %}
+                                <span class="status paused-status">
+                                    Paused
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <form method="POST"
+                                      action="{{ url_for('recurring.toggle_recurring', recurring_id=item.id) }}">
+
+                                    <button class="toggle-button"
+                                            type="submit">
+
+                                        {% if item.active %}
+                                            Pause
+                                        {% else %}
+                                            Resume
+                                        {% endif %}
+
+                                    </button>
+
+                                </form>
+
+                                <form method="POST"
+                                      action="{{ url_for('recurring.delete_recurring', recurring_id=item.id) }}"
+                                      onsubmit="return confirm('Are you sure you want to delete this recurring transaction?');">
+
+                                    <button class="delete-button"
+                                            type="submit">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+            <span>🔁</span>
+            <strong>No recurring transactions yet.</strong>
+            <p>Add your first recurring transaction using the form above.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
